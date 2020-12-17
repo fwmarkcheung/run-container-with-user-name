@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export HOME=/var/tmp
+#export $USER_HOME=/var/tmp
 
 function generate_passwd_file() {
 
@@ -9,11 +9,10 @@ function generate_passwd_file() {
 
   echo "Adding a username: ${USER_NAME} to the /etc/passwd with the userid: ${USER_ID} and groupid: ${GROUP_ID}"
 
-  envsubst < ${HOME}/passwd.template > /tmp/passwd
+  envsubst < ${USER_HOME}/passwd.template > /tmp/passwd
   export LD_PRELOAD=/usr/lib64/libnss_wrapper.so
   export NSS_WRAPPER_PASSWD=/tmp/passwd
   export NSS_WRAPPER_GROUP=/etc/group
-
 }
 
 generate_passwd_file
@@ -22,5 +21,8 @@ generate_passwd_file
 while :
 do
   echo "Press <CTRL+C> to exit."
+  export USER_NAME=$(whoami)
+  echo "I am ${USER_NAME}."
+  getent passwd $USER_NAME
   sleep 10
 done
