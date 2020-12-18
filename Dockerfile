@@ -5,12 +5,15 @@ FROM registry.access.redhat.com/ubi8/ubi:8.1
 ENV USER_HOME=/usr/mark
 
 # Install the tools and create user directory
-RUN yum -y install nss_wrapper && \
+RUN yum -y install nss_wrapper gettext && \
     yum clean all && \
-    mkdir -p ${USER_HOME}
+    mkdir -p ${USER_HOME} && \
+    chgrp -R 0 ${USER_HOME} && \
+    chmod -R g+rwX ${USER_HOME}
 
-COPY ./docker-entrypoint.sh ./passwd.template ${USER_HOME}
+COPY ./docker-entrypoint.sh ./
+COPY ./passwd.template /var/tmp
 
 USER 1001
 
-ENTRYPOINT ["/bin/bash", "${USER_HOME}/docker-entrypoint.sh"]
+ENTRYPOINT ["/bin/bash", "./docker-entrypoint.sh"]
